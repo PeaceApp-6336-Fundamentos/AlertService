@@ -2,6 +2,7 @@ package com.upc.pre.peaceapp.alerts.application.internal.commandservices;
 
 import com.upc.pre.peaceapp.alerts.domain.model.aggregates.Alert;
 import com.upc.pre.peaceapp.alerts.domain.model.commands.CreateAlertCommand;
+import com.upc.pre.peaceapp.alerts.domain.model.commands.DeleteAllAlertsByReportIdCommand;
 import com.upc.pre.peaceapp.alerts.domain.model.commands.DeleteAllAlertsByUserIdCommand;
 import com.upc.pre.peaceapp.alerts.domain.services.AlertCommandService;
 import com.upc.pre.peaceapp.alerts.infrastructure.persistence.jpa.AlertRepository;
@@ -64,5 +65,12 @@ public class AlertCommandServiceImpl implements AlertCommandService {
         log.info("Deleting all alerts for user ID: {}", command.userId());
         alertRepository.deleteAllByUserId(command.userId());
         log.info("All alerts deleted successfully for user ID: {}", command.userId());
+    }
+    @Override
+    @Transactional
+    public void handle(DeleteAllAlertsByReportIdCommand command) {
+        log.info("Deleting all alerts for report ID: {}", command.reportId());
+        alertRepository.deleteAllByReportId(command.reportId());
+        log.info("All alerts deleted successfully for report ID: {}", command.reportId());
     }
 }

@@ -3,6 +3,7 @@ package com.upc.pre.peaceapp.alerts.interfaces.rest;
 import com.upc.pre.peaceapp.alerts.domain.model.aggregates.Alert;
 import com.upc.pre.peaceapp.alerts.domain.model.commands.CreateAlertCommand;
 import com.upc.pre.peaceapp.alerts.domain.model.commands.DeleteAllAlertsByUserIdCommand;
+import com.upc.pre.peaceapp.alerts.domain.model.commands.DeleteAllAlertsByReportIdCommand;
 import com.upc.pre.peaceapp.alerts.domain.model.queries.GetAlertByIdQuery;
 import com.upc.pre.peaceapp.alerts.domain.model.queries.GetAlertsByUserIdQuery;
 import com.upc.pre.peaceapp.alerts.domain.model.queries.GetAllAlertsQuery;
@@ -157,8 +158,8 @@ public class AlertController {
     }
 
     // ----------------------------------------------------------------------
-// DELETE ALL ALERTS BY USER ID
-// ----------------------------------------------------------------------
+    // DELETE ALL ALERTS BY USER ID
+    // ----------------------------------------------------------------------
     @Operation(summary = "Delete all alerts by user ID",
             description = "Deletes all alerts created by a specific user.")
     @ApiResponses(value = {
@@ -181,4 +182,28 @@ public class AlertController {
         }
     }
 
+    // ----------------------------------------------------------------------
+    // DELETE ALL ALERTS BY REPORT ID
+    // ----------------------------------------------------------------------
+    @Operation(summary = "Delete all alerts by report ID",
+            description = "Deletes all alerts associated with a specific report.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All alerts for the report deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "No alerts found for the report")
+    })
+    @DeleteMapping("/report/{reportId}")
+    public ResponseEntity<?> deleteAllAlertsByReportId(@PathVariable Long reportId) {
+        log.warn("Deleting all alerts for report ID: {}", reportId);
+
+        try {
+            alertCommandService.handle(new DeleteAllAlertsByReportIdCommand(reportId));
+            return ResponseEntity.ok("All alerts for report ID " + reportId + " deleted successfully");
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid report ID: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("Error deleting alerts for report ID {}: {}", reportId, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
 }

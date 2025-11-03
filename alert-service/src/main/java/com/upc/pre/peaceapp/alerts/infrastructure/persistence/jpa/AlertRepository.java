@@ -11,4 +11,5 @@ public interface AlertRepository extends JpaRepository<Alert, Long> {
     List<Alert> findAllByUserId(Long userId);
     Alert findById(long alertId);
     void deleteAllByUserId(Long userId);
+    void deleteAllByReportId(Long reportId);
 }
